@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Day Planner</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="task_name">Task Name</string>
+    <string name="time_to_complete_the_work">Time to complete the work</string>
+    <string name="efforts_to_complete_work">Efforts to complete work</string>
+    <string name="impact">Impact</string>
+    <string name="urgency">Urgency</string>
+    <string name="probability_of_success">Probability of Success</string>
+    <string name="work_sequence">Level of Work</string>
+    <string name="add_task">Add Task</string>
+    <string name="number_of_days_left_to_complete">Number of days left to complete</string>
+</resources>
