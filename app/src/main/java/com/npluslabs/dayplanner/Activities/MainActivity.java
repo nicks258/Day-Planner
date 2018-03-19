@@ -1,23 +1,25 @@
-package com.npluslabs.dayplanner;
+package com.npluslabs.dayplanner.Activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.TextView;
 
+
+import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crash.FirebaseCrash;
 import com.idescout.sql.SqlScoutServer;
+import com.npluslabs.dayplanner.Fragments.DashboardFragment;
+import com.npluslabs.dayplanner.R;
 
-public class MainActivity extends AppCompatActivity {
+import io.fabric.sdk.android.Fabric;
+
+public class MainActivity extends AppCompatActivity  {
     public static final String HIGHESTSCORE = "hightestScores" ;
     SharedPreferences sharedpreferences;
 //    private TextView mTextMessage;
@@ -55,7 +57,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SqlScoutServer.create(this, getPackageName());
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
+//        Crashlytics.getInstance().crash();
+//        FirebaseCrash.logcat(Log.ERROR, "MainActivity", "NPE caught");
+////        FirebaseCrash.report("");
+//        Crashlytics.log(1, "Test Crash", "its work");
+//        Crashlytics.log("crash");
+//        final Fabric fabric = new Fabric.Builder(this)
+//                .kits(new Crashlytics())
+//                .debuggable(true)           // Enables Crashlytics debugger
+//                .build();
+//        Fabric.with(fabric, new Crashlytics[]{new Crashlytics()});
 
 //        mTextMessage = (TextView) findViewById(R.id.message);
 //        final BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -65,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.content,selectedFragment);
         fragmentTransaction.commit();
         sharedpreferences = getSharedPreferences(HIGHESTSCORE, Context.MODE_PRIVATE);
+        FirebaseCrash.log("Activity created");
+
+
 //        final View activityRootView = findViewById(R.id.content);
 //        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
@@ -87,4 +103,16 @@ public class MainActivity extends AppCompatActivity {
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
+//    @Override
+//    public void onBackPressed(){
+//        android.app.FragmentManager fm = getFragmentManager();
+//        if (fm.getBackStackEntryCount() > 0) {
+//            Log.i("MainActivity", "popping backstack");
+//            fm.popBackStack();
+//        } else {
+//            Log.i("MainActivity", "nothing on backstack, calling super");
+//            super.onBackPressed();
+//        }
+//    }
+
 }

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.npluslabs.dayplanner.Models.PlanerModel;
+
 import java.util.ArrayList;
 
 /**
@@ -17,9 +19,12 @@ public class SqliteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "PlanerDatabase.db";
     public static final String TABLE_NAME = "TaskList";
+    public static final String TABLE_NAME1 = "TeamName";
+    public static final String TABLE_NAME2 = "TaskDetails";
     public static final String TABLE_TRANSACTION = "KHATA_TRANSACTION";
     public static final String COLUMN_ID = "ID";
     public static final String TASK_NAME = "TASK_NAME";
+    public static final String TASK_DESC = "TASK_DESCRIPTION";
     public static final String TIME_TO_COMPLETE = "TIME_TO_COMPLETE";
     public static final String EFFORTS_TO_COMPLETE = "EFFORTS_TO_COMPLETE";
     public static final String IMPACT = "IMPACT";
@@ -27,9 +32,14 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public static final String DEADLINE_DATE = "DEADLINE_DATE";
     public static final String PROBABILITY_OF_SUCCESS = "PROBABILITY_OF_SUCCESS";
     public static final String WORK_SEQUENCE = "WORK_SEQUENCE";
+    public static final String TEAM_NAME = "TEAM_NAME";
     public static final String TIME_TO_COMPLETE_NORMALISE = "TIME_TO_COMPLETE_NORMALISE";
     public static final String DEADLINE_NORMALISE = "DEADLINE_NORMALISE";
     public static final String FINAL_SCORE = "FINAL_SCORE";
+    public static final String DAYS_LEFT = "DAYS_LEFT";
+    public static final String DEPENDENT_TASK = "DEPENDENT_TASK";
+    public static final String D_FACTOR = "D_FACTOR";
+    public static final String IMPORTANCE = "IMPORTANCE";
     public static final String COLUMN_TRANSACTION_DATE_TIME = "TRANSFER_DATE_TIME";
     public static final String COLUMN_TRANSACTION_CATEGORY = "TRANSACTION_CATEGORY";
     public static final String COLUMN_TRANSACTION_DESCRIPTION = "TRANSECTION_DESCRIPTION";
@@ -47,12 +57,26 @@ public class SqliteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String table_creation_sql = "create table " + TABLE_NAME + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                TASK_NAME + " VARCHAR, " + IMPACT + " VARCHAR, " + TIME_TO_COMPLETE +
-                " VARCHAR ," + EFFORTS_TO_COMPLETE +" VARCHAR,"+ DEADLINE_DATE+ " VARCHAR,"
+                TASK_NAME + " VARCHAR, " + IMPACT + " VARCHAR, " + TIME_TO_COMPLETE + " VARCHAR, " + DAYS_LEFT +
+                " VARCHAR ," + EFFORTS_TO_COMPLETE +" VARCHAR,"+ DEADLINE_DATE+ " VARCHAR,"+ TEAM_NAME+ " VARCHAR,"
                 + TIME_TO_COMPLETE_NORMALISE+ " VARCHAR,"+ DEADLINE_NORMALISE+ " VARCHAR," + FINAL_SCORE+ " REAL,"
                 + WORK_SEQUENCE+ " VARCHAR,"+ PROBABILITY_OF_SUCCESS+ " VARCHAR," + URGENCY + " VARCHAR);";
         Log.i("table creation", table_creation_sql);
         db.execSQL(table_creation_sql);
+
+        String table_creation_team = "create table TeamName"  + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                TEAM_NAME + " VARCHAR);";
+        Log.i("table creation", table_creation_team);
+        db.execSQL(table_creation_team);
+
+        String table_creation_task = "create table " + TABLE_NAME2 + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                TASK_NAME + " VARCHAR, "  + TIME_TO_COMPLETE + " VARCHAR, " +  TEAM_NAME+ " VARCHAR,"
+                + TIME_TO_COMPLETE_NORMALISE + " VARCHAR," + IMPORTANCE + " VARCHAR,"
+                + TASK_DESC + " VARCHAR," + DEPENDENT_TASK + " VARCHAR," +
+                FINAL_SCORE+ " REAL," +  D_FACTOR + " VARCHAR," +  WORK_SEQUENCE + " VARCHAR,"
+                + PROBABILITY_OF_SUCCESS+ " VARCHAR," + URGENCY + " VARCHAR);";
+        Log.i("table creation", table_creation_task);
+        db.execSQL(table_creation_task);
 //        db.execSQL("create table " + TABLE_TRANSACTION + " ( " + WORK_SEQUENCE +" UNSIGNED BIG INT,"
 //                + DEADLINE_DATE + " INTEGER,"+ PROBABILITY_OF_SUCCESS + " VARCHAR unique,"
 //                + COLUMN_SYNC+ " INTEGER," +  COLUMN_TRANSACTION_CATEGORY +" VARCHAR,"+
@@ -64,6 +88,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME1);
 //        db.execSQL("DROP TABLE IF EXISTS" + TABLE_TRANSACTION);
         onCreate(db);
     }
@@ -102,7 +127,37 @@ public class SqliteHelper extends SQLiteOpenHelper {
         contentValues.put(TIME_TO_COMPLETE_NORMALISE,planerModel.getNormaliseTimeToComplete());
         contentValues.put(DEADLINE_NORMALISE,planerModel.getNormaliseDeadline());
         contentValues.put(FINAL_SCORE,planerModel.getFinalScore());
+        contentValues.put(TEAM_NAME,planerModel.getTeamName());
+        contentValues.put(DAYS_LEFT,planerModel.getDaysLeft());
         database.insert(TABLE_NAME, null, contentValues);
+        database.close();
+    }
+
+
+    public void insertNewRecord(PlanerModel planerModel) {
+        database = this.getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TASK_NAME, planerModel.getTaskName());
+        contentValues.put(TIME_TO_COMPLETE, planerModel.getTimeToComplete());
+        contentValues.put(PROBABILITY_OF_SUCCESS, planerModel.getProbabilityofSuccess());
+        contentValues.put(URGENCY, planerModel.getUrgency());
+        contentValues.put(TIME_TO_COMPLETE_NORMALISE,planerModel.getNormaliseTimeToComplete());
+        contentValues.put(D_FACTOR,planerModel.getdFactor());
+        contentValues.put(IMPORTANCE,planerModel.getImportance());
+        contentValues.put(FINAL_SCORE,planerModel.getFinalScore());
+        contentValues.put(TEAM_NAME,planerModel.getTeamName());
+        contentValues.put(WORK_SEQUENCE,planerModel.getWorkSequence());
+        contentValues.put(TASK_DESC,planerModel.getTaskDescription());
+        contentValues.put(DEPENDENT_TASK,planerModel.getDependentTask());
+        database.insert(TABLE_NAME2, null, contentValues);
+        database.close();
+    }
+
+    public void insertTeamName(String teamName) {
+        database = this.getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TEAM_NAME,teamName);
+        database.insert(TABLE_NAME1, null, contentValues);
         database.close();
     }
 
@@ -119,6 +174,25 @@ public class SqliteHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DEADLINE_NORMALISE,normaliseDeadline);
         database.update(TABLE_NAME, contentValues, TASK_NAME + " = ?", new String[]{taskName});
+//        database.update(TABLE_NAME,contentValues,TASK_NAME+" = ?",new String[taskName]);
+    }
+
+    public void updateTaskDetails(PlanerModel planerModel,String taskName){
+        database = this.getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TASK_NAME, planerModel.getTaskName());
+        contentValues.put(TIME_TO_COMPLETE, planerModel.getTimeToComplete());
+        contentValues.put(PROBABILITY_OF_SUCCESS, planerModel.getProbabilityofSuccess());
+        contentValues.put(URGENCY, planerModel.getUrgency());
+        contentValues.put(TIME_TO_COMPLETE_NORMALISE,planerModel.getNormaliseTimeToComplete());
+        contentValues.put(D_FACTOR,planerModel.getdFactor());
+        contentValues.put(IMPORTANCE,planerModel.getImportance());
+        contentValues.put(FINAL_SCORE,planerModel.getFinalScore());
+        contentValues.put(TEAM_NAME,planerModel.getTeamName());
+        contentValues.put(WORK_SEQUENCE,planerModel.getWorkSequence());
+        contentValues.put(TASK_DESC,planerModel.getTaskDescription());
+        contentValues.put(DEPENDENT_TASK,planerModel.getDependentTask());
+        database.update(TABLE_NAME2, contentValues, TASK_NAME + " = ?", new String[]{taskName});
 //        database.update(TABLE_NAME,contentValues,TASK_NAME+" = ?",new String[taskName]);
     }
 
@@ -149,21 +223,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
 //        }
 //        return false;
 //    }
-    public String selectPhonenumber(String rowid)
-    {
-        String name = "";
-        SQLiteDatabase db = this.getReadableDatabase();
-        // Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE ", null);
-        Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE WHERE ID = ?", new String[] {String.valueOf(rowid)});
-        // String name= c.getString(c.getColumnIndex("NUMBER"));
-        if (c.moveToFirst()) {
-            name = c.getString(c.getColumnIndex("NUMBER"));
-        }
 
-        c.close();
-        db.close();
-        return name;
-    }
 
 //    public void inserttransactionRecord(ContactModel contact){
 //        database = this.getReadableDatabase();
@@ -203,6 +263,25 @@ public class SqliteHelper extends SQLiteOpenHelper {
 //    }
 
 
+    public ArrayList<PlanerModel> getTeamName() {
+        database = this.getReadableDatabase();
+        Cursor cursor = database.query(TABLE_NAME1, null, null, null, null, null, TEAM_NAME +" ASC");
+        ArrayList<PlanerModel> contacts = new ArrayList<PlanerModel>();
+        PlanerModel planerModel;
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                planerModel = new PlanerModel();
+                planerModel.setTeamName(cursor.getString(cursor.getColumnIndex(TEAM_NAME)));
+                contacts.add(planerModel);
+            }
+        }
+        cursor.close();
+        database.close();
+        return contacts;
+    }
+
+
     public ArrayList<PlanerModel> getAllRecords() {
         database = this.getReadableDatabase();
         Cursor cursor = database.query(TABLE_NAME, null, null, null, null, null, FINAL_SCORE +" DESC");
@@ -223,12 +302,161 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 planerModel.setNormaliseDeadline(cursor.getString(cursor.getColumnIndex(DEADLINE_NORMALISE)));
                 planerModel.setNormaliseTimeToComplete(cursor.getString(cursor.getColumnIndex(TIME_TO_COMPLETE_NORMALISE)));
                 planerModel.setFinalScore(cursor.getDouble(cursor.getColumnIndex(FINAL_SCORE)));
+                planerModel.setDaysLeft(cursor.getString(cursor.getColumnIndex(DAYS_LEFT)));
                 contacts.add(planerModel);
             }
         }
         cursor.close();
         database.close();
 
+        return contacts;
+    }
+
+    public ArrayList<PlanerModel> getTaskName()
+    {
+        String name = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE ", null);
+//         cursor = db.rawQuery("SELECT * FROM "+ TABLE_NAME +"  WHERE "+ TEAM_NAME + " = ?", new String[] {teamName});
+        Cursor cursor = db.query(TABLE_NAME2, null, null, null, null, null, null);
+        ArrayList<PlanerModel> contacts = new ArrayList<PlanerModel>();
+        // String name= c.getString(c.getColumnIndex("NUMBER"));
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                PlanerModel planerModel = new PlanerModel();
+                planerModel.setTeamName(cursor.getString(cursor.getColumnIndex(TEAM_NAME)));
+                planerModel.setTaskName(cursor.getString(cursor.getColumnIndex(TASK_NAME)));
+                planerModel.setTimeToComplete(cursor.getString(cursor.getColumnIndex(TIME_TO_COMPLETE)));
+                planerModel.setdFactor(cursor.getString(cursor.getColumnIndex(D_FACTOR)));
+                planerModel.setImportance(cursor.getString(cursor.getColumnIndex(IMPORTANCE)));
+                planerModel.setProbabilityofSuccess(cursor.getString(cursor.getColumnIndex(PROBABILITY_OF_SUCCESS)));
+                planerModel.setUrgency(cursor.getString(cursor.getColumnIndex(URGENCY)));
+                planerModel.setFinalScore(cursor.getDouble(cursor.getColumnIndex(FINAL_SCORE)));
+                planerModel.setTaskDescription(cursor.getString(cursor.getColumnIndex(TASK_DESC)));
+                planerModel.setWorkSequence(cursor.getString(cursor.getColumnIndex(WORK_SEQUENCE)));
+                contacts.add(planerModel);
+            }
+        }
+        cursor.close();
+        db.close();
+        return contacts;
+    }
+
+    public ArrayList<PlanerModel> getTaskList(String teamName)
+    {
+        String name = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE ", null);
+//         cursor = db.rawQuery("SELECT * FROM "+ TABLE_NAME +"  WHERE "+ TEAM_NAME + " = ?", new String[] {teamName});
+        Cursor cursor = db.query(TABLE_NAME, null, "TEAM_NAME=?", new String[] { teamName }, null, null, null);
+        ArrayList<PlanerModel> contacts = new ArrayList<PlanerModel>();
+        // String name= c.getString(c.getColumnIndex("NUMBER"));
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                PlanerModel planerModel = new PlanerModel();
+                planerModel.setTaskName(cursor.getString(cursor.getColumnIndex(TASK_NAME)));
+                planerModel.setImpact(cursor.getString(cursor.getColumnIndex(IMPACT)));
+                planerModel.setTimeToComplete(cursor.getString(cursor.getColumnIndex(TIME_TO_COMPLETE)));
+                planerModel.setEffortsToComplete(cursor.getString(cursor.getColumnIndex(EFFORTS_TO_COMPLETE)));
+                planerModel.setDeadLine(cursor.getString(cursor.getColumnIndex(DEADLINE_DATE)));
+                planerModel.setWorkSequence(cursor.getString(cursor.getColumnIndex(WORK_SEQUENCE)));
+                planerModel.setProbabilityofSuccess(cursor.getString(cursor.getColumnIndex(PROBABILITY_OF_SUCCESS)));
+                planerModel.setUrgency(cursor.getString(cursor.getColumnIndex(URGENCY)));
+                planerModel.setNormaliseDeadline(cursor.getString(cursor.getColumnIndex(DEADLINE_NORMALISE)));
+                planerModel.setNormaliseTimeToComplete(cursor.getString(cursor.getColumnIndex(TIME_TO_COMPLETE_NORMALISE)));
+                planerModel.setFinalScore(cursor.getDouble(cursor.getColumnIndex(FINAL_SCORE)));
+                contacts.add(planerModel);
+            }
+        }
+        cursor.close();
+        db.close();
+        return contacts;
+    }
+
+    public ArrayList<PlanerModel> getWorkLeveltNew(String workLevel)
+    {
+        String name = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE ", null);
+//         cursor = db.rawQuery("SELECT * FROM "+ TABLE_NAME +"  WHERE "+ TEAM_NAME + " = ?", new String[] {teamName});
+        Cursor cursor = db.query(TABLE_NAME2, null, "WORK_SEQUENCE=?", new String[] { workLevel }, null, null, FINAL_SCORE +" DESC");
+        ArrayList<PlanerModel> contacts = new ArrayList<PlanerModel>();
+        // String name= c.getString(c.getColumnIndex("NUMBER"));
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                PlanerModel planerModel = new PlanerModel();
+                planerModel.setTeamName(cursor.getString(cursor.getColumnIndex(TEAM_NAME)));
+                planerModel.setTaskName(cursor.getString(cursor.getColumnIndex(TASK_NAME)));
+                planerModel.setTimeToComplete(cursor.getString(cursor.getColumnIndex(TIME_TO_COMPLETE)));
+                planerModel.setdFactor(cursor.getString(cursor.getColumnIndex(D_FACTOR)));
+                planerModel.setImportance(cursor.getString(cursor.getColumnIndex(IMPORTANCE)));
+                planerModel.setProbabilityofSuccess(cursor.getString(cursor.getColumnIndex(PROBABILITY_OF_SUCCESS)));
+                planerModel.setUrgency(cursor.getString(cursor.getColumnIndex(URGENCY)));
+                planerModel.setFinalScore(cursor.getDouble(cursor.getColumnIndex(FINAL_SCORE)));
+                planerModel.setTaskDescription(cursor.getString(cursor.getColumnIndex(TASK_DESC)));
+                planerModel.setWorkSequence(cursor.getString(cursor.getColumnIndex(WORK_SEQUENCE)));
+                contacts.add(planerModel);
+            }
+        }
+        cursor.close();
+        db.close();
+        return contacts;
+    }
+
+
+
+    public ArrayList<PlanerModel> getTaskListNew(String teamName) {
+        String name = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE ", null);
+//         cursor = db.rawQuery("SELECT * FROM "+ TABLE_NAME +"  WHERE "+ TEAM_NAME + " = ?", new String[] {teamName});
+        Cursor cursor = db.query(TABLE_NAME2, null, "TEAM_NAME=?", new String[] { teamName }, null, null, FINAL_SCORE +" DESC");
+        ArrayList<PlanerModel> contacts = new ArrayList<PlanerModel>();
+        // String name= c.getString(c.getColumnIndex("NUMBER"));
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                PlanerModel planerModel = new PlanerModel();
+                planerModel.setTaskName(cursor.getString(cursor.getColumnIndex(TASK_NAME)));
+                planerModel.setTimeToComplete(cursor.getString(cursor.getColumnIndex(TIME_TO_COMPLETE)));
+                planerModel.setdFactor(cursor.getString(cursor.getColumnIndex(D_FACTOR)));
+                planerModel.setTeamName(cursor.getString(cursor.getColumnIndex(TEAM_NAME)));
+                planerModel.setImportance(cursor.getString(cursor.getColumnIndex(IMPORTANCE)));
+                planerModel.setProbabilityofSuccess(cursor.getString(cursor.getColumnIndex(PROBABILITY_OF_SUCCESS)));
+                planerModel.setUrgency(cursor.getString(cursor.getColumnIndex(URGENCY)));
+                planerModel.setFinalScore(cursor.getDouble(cursor.getColumnIndex(FINAL_SCORE)));
+                planerModel.setTaskDescription(cursor.getString(cursor.getColumnIndex(TASK_DESC)));
+                planerModel.setWorkSequence(cursor.getString(cursor.getColumnIndex(WORK_SEQUENCE)));
+                planerModel.setDependentTask(cursor.getString(cursor.getColumnIndex(DEPENDENT_TASK)));
+                contacts.add(planerModel);
+            }
+        }
+        cursor.close();
+        db.close();
+        return contacts;
+    }
+
+    public ArrayList<PlanerModel> taskDependentOnMe(String taskName) {
+        String name = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Cursor c = db.rawQuery("SELECT NUMBER FROM PEOPLE ", null);
+//         cursor = db.rawQuery("SELECT * FROM "+ TABLE_NAME +"  WHERE "+ TEAM_NAME + " = ?", new String[] {teamName});
+        Cursor cursor = db.query(TABLE_NAME2, null, "DEPENDENT_TASK=?", new String[] { taskName }, null, null, null);
+        ArrayList<PlanerModel> contacts = new ArrayList<PlanerModel>();
+        // String name= c.getString(c.getColumnIndex("NUMBER"));
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                PlanerModel planerModel = new PlanerModel();
+                planerModel.setTaskName(cursor.getString(cursor.getColumnIndex(TASK_NAME)));
+                contacts.add(planerModel);
+            }
+        }
+        cursor.close();
+        db.close();
         return contacts;
     }
 

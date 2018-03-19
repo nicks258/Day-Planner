@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "402656132702",
+    "firebase_url": "https://day-planner-34629.firebaseio.com",
+    "project_id": "day-planner-34629",
+    "storage_bucket": "day-planner-34629.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402656132702:android:630915d0e9077dd0",
+        "android_client_info": {
+          "package_name": "com.npluslabs.dayplanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "402656132702-9aupu34cg6v25kmd49efa7ddkh8di56u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn_g13UTp0HvtfU9biD6xnE3stQOWfj50"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

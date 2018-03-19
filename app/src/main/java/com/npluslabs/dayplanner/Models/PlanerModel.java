@@ -1,4 +1,4 @@
-package com.npluslabs.dayplanner;
+package com.npluslabs.dayplanner.Models;
 
 /**
  * Created by Sumit on 22-Feb-18.
@@ -9,12 +9,58 @@ public class PlanerModel {
     String timeToComplete;
     String impact;
     String urgency;
+    String teamName;
     String deadLine;
     String probabilityofSuccess;
     String workSequence;
     String effortsToComplete;
     String normaliseTimeToComplete;
 
+    public String getDependentTask() {
+        return dependentTask;
+    }
+
+    public void setDependentTask(String dependentTask) {
+        this.dependentTask = dependentTask;
+    }
+
+    String dependentTask;
+    public String getTaskDescription() {
+        return taskDescription;
+    }
+
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
+
+    String taskDescription;
+    public String getdFactor() {
+        return dFactor;
+    }
+
+    public void setdFactor(String dFactor) {
+        this.dFactor = dFactor;
+    }
+
+    String dFactor;
+    public String getImportance() {
+        return importance;
+    }
+
+    public void setImportance(String importance) {
+        this.importance = importance;
+    }
+
+    String importance;
+    public String getDaysLeft() {
+        return daysLeft;
+    }
+
+    public void setDaysLeft(String daysLeft) {
+        this.daysLeft = daysLeft;
+    }
+
+    String daysLeft;
     public double getFinalScore() {
         return finalScore;
     }
@@ -35,6 +81,13 @@ public class PlanerModel {
         this.normaliseDeadline = normaliseDeadline;
     }
 
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
 
     public String getNormaliseTimeToComplete() {
         return normaliseTimeToComplete;
